@@ -1,0 +1,19 @@
+{
+  "name": "erth",
+  "version": "0.1.0",
+  "description": "A concatenative actor language",
+  "main": "index.js",
+  "scripts": {
+    "test": "node src/test.js | node_modules/.bin/faucet"
+  },
+  "author": "Justin Falcone <justin@justinfalcone.com>",
+  "license": "MIT",
+  "dependencies": {
+    "pegjs": "^0.9.0",
+    "redux-action-schema": "^0.7.3"
+  },
+  "devDependencies": {
+    "faucet": "0.0.1",
+    "tape": "^4.6.0"
+  }
+}
