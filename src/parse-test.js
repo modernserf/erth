@@ -33,6 +33,19 @@ test("parse a word", (t) => {
     t.end()
 })
 
+test("parse a macro", (t) => {
+    const ast = parseToken(`: addOne 1 + ;`)
+    t.deepEquals(ast, {
+        type: "macro",
+        payload: { type: "define", body: [
+            { type: "word", payload: "addOne" },
+            { type: "number", payload: 1 },
+            { type: "word", payload: "+" },
+        ]},
+    })
+    t.end()
+})
+
 test("parse a program", (t) => {
     const ast = parse(`1   2 +
         [ "foo" "bar" ] eval ++
@@ -40,6 +53,7 @@ test("parse a program", (t) => {
     t.deepEquals(ast, {
         type: "program",
         payload: [
+            /* eslint-disable no-multi-spaces */
             { type: "number", payload: 1 },
             { type: "number", payload: 2 },
             { type: "word",   payload: "+" },
@@ -49,7 +63,8 @@ test("parse a program", (t) => {
             { type: "word",   payload: "]" },
             { type: "word",   payload: "eval" },
             { type: "word",   payload: "++" },
-        ]
+            /* eslint-enable no-multi-spaces */
+        ],
     })
     t.end()
 })

@@ -1,12 +1,35 @@
 Program
-= _? head:Atom tail:AtomSp* _? {
-  return { type: "program", payload: [head].concat(tail) }
+= _? head:ProgramComponent tail:SpProgramComponent* _? {
+    var program = head.concat.apply(head, tail)
+    return { type: "program", payload: program }
+}
+
+SpProgramComponent
+= _ pg:ProgramComponent { return pg }
+
+ProgramComponent
+= macro:Macro { return [macro] }
+/ Expression
+
+/* Macros */
+
+Macro
+= name:Word? ":" _ body:Expression _ ";" {
+    return { type: "macro", payload: {
+        type: name ? name.payload : "define",
+        body: body,
+    } }
+}
+
+/* Expressions */
+
+Expression
+= head:Atom tail:AtomSp* {
+  return [head].concat(tail)
 }
 
 AtomSp
-= _ atom:Atom {
-    return atom
-}
+= _ atom:Atom { return atom }
 
 Atom
 = Number
@@ -16,12 +39,12 @@ Atom
 /* Words */
 
 Word
-= NonSpChar+ {
+= WordChar+ {
     return { type: "word", payload: text() }
 }
 
-NonSpChar
-= !_ ch:. { return ch }
+WordChar
+= ![ \t\n\r:;]+ ch:. { return ch }
 
 /* Strings */
 
