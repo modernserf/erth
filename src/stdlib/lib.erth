@@ -1,1 +1,3 @@
 : divmod    over over div -rot mod ;
+: if        [ ] ? apply ;
+: if-else   ? apply ;

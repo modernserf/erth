@@ -1,30 +1,33 @@
 Program
-= _? program:Exprs _? {
+= _ program:Expression* _ {
     return { type: "program", payload: program }
 }
 
 /* Expressions */
 
-Exprs
-= car:Expression _ cdr:Exprs { return car.concat.apply(car,cdr) }
-/ exprs:Expression { return exprs }
-
 Expression
-= name:Word? ":" _ expr:Expression? _ ";" { return [{
-    type: name ? name.payload : "define",
-    payload: expr || [],
-    }] }
-/ name:Word? "[" _? expr:Expression? _? "]" { return [{
-    type: name ? name.payload : "substack",
-    payload: expr || [],
-    }] }
-/ atom:Atom _ expr:Expression { return [atom].concat(expr) }
-/ atom:Atom { return [atom] }
+= _ expr:Definition _ { return expr }
+/ _ expr:Substack _ { return expr }
+/ _ expr:Number _ { return expr }
+/ _ expr:String _ { return expr }
+/ _ expr:Word _ { return expr }
 
-Atom
-= Number
-/ String
-/ Word
+
+Definition
+= name:Word? ":" _ expr:Expression* _ ";" {
+    return {
+        type: name ? name.payload : "define",
+        payload: expr,
+    }
+}
+
+Substack
+= name:Word? "[" _ expr:Expression* _ "]" {
+    return {
+        type: name ? name.payload : "substack",
+        payload: expr,
+    }
+}
 
 /* Words */
 
@@ -70,4 +73,4 @@ Digits
 = [0-9]+ { return text() }
 
 _ "whitespace"
-= [ \t\n\r]+
+= [ \t\n\r]*
