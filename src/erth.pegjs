@@ -1,32 +1,27 @@
 Program
-= _? head:ProgramComponent tail:SpProgramComponent* _? {
-    var program = head.concat.apply(head, tail)
+= _? program:Exprs _? {
     return { type: "program", payload: program }
-}
-
-SpProgramComponent
-= _ pg:ProgramComponent { return pg }
-
-ProgramComponent
-= macro:Macro { return [macro] }
-/ Expression
-
-/* Macros */
-
-Macro
-= name:Word? ":" _ body:Expression _ ";" {
-    return { type: "macro", payload: {
-        type: name ? name.payload : "define",
-        body: body,
-    } }
 }
 
 /* Expressions */
 
+Exprs
+= car:Expression _ cdr:Exprs { return car.concat.apply(car,cdr) }
+/ exprs:Expression { return exprs }
+
 Expression
-= head:Atom tail:AtomSp* {
-  return [head].concat(tail)
-}
+= name:Word? ":" _ expr:Expression? _ ";" { return [{
+    type: "macro", payload: {
+        type: name ? name.payload : "define",
+        body: expr || [],
+    } }] }
+/ name:Word? "[" _? expr:Expression? _? "]" { return [{
+    type: "macro", payload: {
+        type: name ? name.payload : "substack",
+        body: expr || [],
+    } }] }
+/ atom:Atom _ expr:Expression { return [atom].concat(expr) }
+/ atom:Atom { return [atom] }
 
 AtomSp
 = _ atom:Atom { return atom }
@@ -44,7 +39,7 @@ Word
 }
 
 WordChar
-= ![ \t\n\r:;]+ ch:. { return ch }
+= ![ \t\n\r:;\[\]]+ ch:. { return ch }
 
 /* Strings */
 

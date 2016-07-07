@@ -55,3 +55,20 @@ test("define words", (t) => {
     t.deepEquals(runProgram(`: add2 2 + ; 5 add2`), [7])
     t.end()
 })
+
+test("substack basics", (t) => {
+    t.deepEquals(runProgram(`1 quote 2 push 3 push eval`), [1, 2, 3])
+    t.end()
+})
+
+test("substack literals", (t) => {
+    t.deepEquals(runProgram(`[1 2 3] eval`), [1, 2, 3])
+    t.end()
+})
+
+test("substack ins", (t) => {
+    t.deepEquals(runProgram(`[ 1 2 3 ] [ 2 * ] ins eval`), [2, 4, 6])
+    t.end()
+})
+
+test.skip("nested substacks")

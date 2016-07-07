@@ -1,6 +1,8 @@
+const { quote, evalExpression } = require("../eval")
+
 const op = (fn) => (a) => {
     const r = a.pop()
-    return a.push(fn(a.pop(), r))
+    a.push(fn(a.pop(), r))
 }
 
 const div = (l, r) => Math.floor(l / r)
@@ -16,7 +18,7 @@ const math = {
     divmod: (s) => {
         const r = s.pop()
         const l = s.pop()
-        return s.push(div(l, r), mod(l, r))
+        s.push(div(l, r), mod(l, r))
     },
 }
 
@@ -33,7 +35,7 @@ const logic = {
 const stackOps = {
     dup: (s) => {
         const x = s.pop()
-        return s.push(x, x)
+        s.push(x, x)
     },
     drop: (s) => {
         s.pop()
@@ -41,19 +43,19 @@ const stackOps = {
     },
     swap: (s) => {
         const [y, x] = [s.pop(), s.pop()]
-        return s.push(y, x)
+        s.push(y, x)
     },
     over: (s) => {
         const [y, x] = [s.pop(), s.pop()]
-        return s.push(x, y, x)
+        s.push(x, y, x)
     },
     rot: (s) => {
         const [z, y, x] = [s.pop(), s.pop(), s.pop()]
-        return s.push(y, z, x)
+        s.push(y, z, x)
     },
     "-rot": (s) => {
         const [z, y, x] = [s.pop(), s.pop(), s.pop()]
-        return s.push(z, x, y)
+        s.push(z, x, y)
     },
 }
 
@@ -66,8 +68,25 @@ const comparison = {
     "<=": op((a, b) => a <= b),
     "?": (s) => {
         const [els, thn, iff] = [s.pop(), s.pop(), s.pop()]
-        return s.push(iff ? thn : els)
+        s.push(iff ? thn : els)
     },
 }
 
-module.exports = Object.assign({}, math, logic, stackOps, comparison)
+const substacks = {
+    quote: (s) => s.push([quote(s.pop())]),
+    push: (s) => {
+        const [val, ss] = [s.pop(), s.pop()]
+        ss.push(quote(val))
+        s.push(ss)
+    },
+    eval: (s, env) => {
+        evalExpression(s, env, s.pop())
+    },
+    ins: (s, env) => {
+        const [fns, vals] = [s.pop(), s.pop()]
+        s.push(vals.reduce((coll, val) => coll.concat([val], fns), []))
+    },
+}
+
+module.exports = Object.assign({},
+    math, logic, stackOps, comparison, substacks)

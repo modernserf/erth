@@ -46,9 +46,22 @@ test("parse a macro", (t) => {
     t.end()
 })
 
+test("substack literals", (t) => {
+    const ast = parseToken(`[1 2 3]`)
+    t.deepEquals(ast, {
+        type: "macro",
+        payload: { type: "substack", body: [
+            { type: "number", payload: 1 },
+            { type: "number", payload: 2 },
+            { type: "number", payload: 3 },
+        ]},
+    })
+    t.end()
+})
+
 test("parse a program", (t) => {
     const ast = parse(`1   2 +
-        [ "foo" "bar" ] eval ++
+        ["foo" "bar"] eval ++
         `)
     t.deepEquals(ast, {
         type: "program",
@@ -57,10 +70,10 @@ test("parse a program", (t) => {
             { type: "number", payload: 1 },
             { type: "number", payload: 2 },
             { type: "word",   payload: "+" },
-            { type: "word",   payload: "[" },
-            { type: "string", payload: "foo" },
-            { type: "string", payload: "bar" },
-            { type: "word",   payload: "]" },
+            { type: "macro",  payload: { type: "substack", body: [
+                { type: "string", payload: "foo" },
+                { type: "string", payload: "bar" },
+            ]} },
             { type: "word",   payload: "eval" },
             { type: "word",   payload: "++" },
             /* eslint-enable no-multi-spaces */
