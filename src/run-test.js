@@ -57,18 +57,22 @@ test("define words", (t) => {
 })
 
 test("substack basics", (t) => {
-    t.deepEquals(runProgram(`1 quote 2 push 3 push eval`), [1, 2, 3])
+    t.deepEquals(runProgram(`1 quote 2 push 3 push apply`), [1, 2, 3])
     t.end()
 })
 
 test("substack literals", (t) => {
-    t.deepEquals(runProgram(`[1 2 3] eval`), [1, 2, 3])
+    t.deepEquals(runProgram(`[1 2 3] apply`), [1, 2, 3])
     t.end()
 })
 
 test("substack ins", (t) => {
-    t.deepEquals(runProgram(`[ 1 2 3 ] [ 2 * ] ins eval`), [2, 4, 6])
+    t.deepEquals(runProgram(`[ 1 2 3 ] [ 2 * ] ins apply`), [2, 4, 6])
     t.end()
 })
 
-test.skip("nested substacks")
+// TODO: _should_ this work?
+test.skip("nested substacks", (t) => {
+    t.deepEquals(runProgram(`[ 1 2 3 [ + + ] apply ] apply`), [6])
+    t.end()
+})

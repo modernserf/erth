@@ -11,20 +11,15 @@ Exprs
 
 Expression
 = name:Word? ":" _ expr:Expression? _ ";" { return [{
-    type: "macro", payload: {
-        type: name ? name.payload : "define",
-        body: expr || [],
-    } }] }
+    type: name ? name.payload : "define",
+    payload: expr || [],
+    }] }
 / name:Word? "[" _? expr:Expression? _? "]" { return [{
-    type: "macro", payload: {
-        type: name ? name.payload : "substack",
-        body: expr || [],
-    } }] }
+    type: name ? name.payload : "substack",
+    payload: expr || [],
+    }] }
 / atom:Atom _ expr:Expression { return [atom].concat(expr) }
 / atom:Atom { return [atom] }
-
-AtomSp
-= _ atom:Atom { return atom }
 
 Atom
 = Number

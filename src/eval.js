@@ -1,41 +1,31 @@
-const { actions, actionCreators } = require("./schema")
-const { types } = require("redux-action-schema")
+const { actions } = require("./schema")
 
-const macros = {
-    define: (_, env, body) => {
-        const name = body[0].payload
-        const expr = body.slice(1)
-        env[name] = (stack, env_) => evalExpression(stack, env_, expr)
-    },
-    substack: (stack, env, body) => {
-        const ss = body
-        stack.push(ss)
-    },
-}
-
-function quote (value) {
-    return types.Number(value) ? actionCreators.number(value)
-        : types.String(value) ? actionCreators.string(value)
-        : actionCreators.macro({ type: "substack", body: value })
-}
-
-function evalToken (stack, env, { type, payload }) {
-    switch (type) {
+function evalErth (stack, env, token) {
+    // unboxed value
+    if (!token.type) {
+        stack.push(token)
+        return
+    }
+    switch (token.type) {
     case actions.string:
     case actions.number:
-        stack.push(payload)
+    case actions.substack:
+        stack.push(token.payload)
         return
     case actions.word:
-        env[payload](stack, env)
+        env[token.payload](stack, env)
         return
-    case actions.macro:
-        macros[payload.type](stack, env, payload.body)
+    case actions.define: {
+        const name = token.payload[0].payload
+        const expr = token.payload.slice(1)
+        env[name] = (stack, env_) => applyErth(stack, env_, expr)
         return
+    }
     }
 }
 
-function evalExpression (stack, env, expr) {
-    expr.forEach((token) => evalToken(stack, env, token))
+function applyErth (stack, env, expr) {
+    expr.forEach((token) => evalErth(stack, env, token))
 }
 
-module.exports = { quote, evalToken, evalExpression }
+module.exports = { evalErth, applyErth }

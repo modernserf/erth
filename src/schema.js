@@ -7,9 +7,8 @@ const schema = createSchema([
     ["number", t.Number],
     ["string", t.String],
     ["word", t.String],
-    ["macro",
-        ["type", t.String],
-        ["body", t.ArrayOf(token)]],
+    ["define", t.ArrayOf(token)],
+    ["substack", t.ArrayOf(token)],
     ["program", t.ArrayOf(token)],
 ])
 

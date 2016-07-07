@@ -33,15 +33,15 @@ test("parse a word", (t) => {
     t.end()
 })
 
-test("parse a macro", (t) => {
+test("parse a definition", (t) => {
     const ast = parseToken(`: addOne 1 + ;`)
     t.deepEquals(ast, {
-        type: "macro",
-        payload: { type: "define", body: [
+        type: "define",
+        payload: [
             { type: "word", payload: "addOne" },
             { type: "number", payload: 1 },
             { type: "word", payload: "+" },
-        ]},
+        ],
     })
     t.end()
 })
@@ -49,12 +49,12 @@ test("parse a macro", (t) => {
 test("substack literals", (t) => {
     const ast = parseToken(`[1 2 3]`)
     t.deepEquals(ast, {
-        type: "macro",
-        payload: { type: "substack", body: [
+        type: "substack",
+        payload: [
             { type: "number", payload: 1 },
             { type: "number", payload: 2 },
             { type: "number", payload: 3 },
-        ]},
+        ],
     })
     t.end()
 })
@@ -70,10 +70,10 @@ test("parse a program", (t) => {
             { type: "number", payload: 1 },
             { type: "number", payload: 2 },
             { type: "word",   payload: "+" },
-            { type: "macro",  payload: { type: "substack", body: [
+            { type: "substack", payload: [
                 { type: "string", payload: "foo" },
                 { type: "string", payload: "bar" },
-            ]} },
+            ]},
             { type: "word",   payload: "eval" },
             { type: "word",   payload: "++" },
             /* eslint-enable no-multi-spaces */

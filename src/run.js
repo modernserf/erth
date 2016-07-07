@@ -1,10 +1,9 @@
 const fs = require("fs")
 const stdlib = require("./stdlib")
-const { evalExpression } = require("./eval")
+const { applyErth } = require("./eval")
 const parse = require("./parse")
 
 const lib = parse(fs.readFileSync("src/stdlib/lib.erth", {encoding: "utf8"}))
-console.log(lib)
 
 function createStack () {
     const stack = []
@@ -24,9 +23,10 @@ function run (ast, environment) {
     const dictionary = Object.assign({},
         environment,
         stdlib)
-    evalExpression(stack, dictionary, lib.payload)
-    evalExpression(stack, dictionary, ast.payload)
-    // return normal array
+    applyErth(stack, dictionary, lib.payload)
+    applyErth(stack, dictionary, ast.payload)
+    // return values
+    console.log("stack:", stack)
     return stack.slice(0)
 }
 
