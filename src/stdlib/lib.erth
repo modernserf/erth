@@ -1,3 +1,6 @@
-: divmod    over over div -rot mod ;
-: if        [ ] ? apply ;
-: if-else   ? apply ;
+: divmod (n n -- n n)   over over div -rot mod ;
+: even?  (n -- bool)    2 mod 0 = ;
+: odd?   (n -- bool)    2 mod 1 = ;
+
+: if        (bool s -- s! | _)          [ ] ? apply ;
+: if-else   (bool sT sF -- sT! | sF!)   ? apply ;

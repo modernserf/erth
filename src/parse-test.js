@@ -26,6 +26,13 @@ test("parse a quoted string", (t) => {
     t.end()
 })
 
+test("parse a quoted word", (t) => {
+    t.deepEquals(parseToken(`'foo`), {
+        type: "string", payload: "foo",
+    })
+    t.end()
+})
+
 test("parse a word", (t) => {
     const ast = parseToken(`foo`)
     t.equals(ast.type, actions.word)
@@ -77,6 +84,19 @@ test("parse a program", (t) => {
             { type: "word",   payload: "eval" },
             { type: "word",   payload: "++" },
             /* eslint-enable no-multi-spaces */
+        ],
+    })
+    t.end()
+})
+
+test("comments", (t) => {
+    t.deepEquals(parseToken(`: foo (number -- number\\)) 1 + ;`), {
+        type: "define",
+        payload: [
+            { type: "word", payload: "foo" },
+            { type: "comment", payload: "number -- number)" },
+            { type: "number", payload: 1 },
+            { type: "word", payload: "+" },
         ],
     })
     t.end()

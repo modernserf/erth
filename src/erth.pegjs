@@ -6,7 +6,8 @@ Program
 /* Expressions */
 
 Expression
-= _ expr:Definition _ { return expr }
+= _ expr:Comment _ { return expr }
+/ _ expr:Definition _ { return expr }
 / _ expr:Substack _ { return expr }
 / _ expr:Number _ { return expr }
 / _ expr:String _ { return expr }
@@ -29,6 +30,24 @@ Substack
     }
 }
 
+/* Comments */
+
+Comment
+= "(" comment:CommentChar* ")" { return {
+    type: "comment",
+    payload: comment.join("")
+}}
+
+CommentChar
+= EscParen
+/ NonParen
+
+EscParen
+= "\\)" { return ')' }
+
+NonParen
+= ![\)]+ ch:. { return ch }
+
 /* Words */
 
 Word
@@ -37,14 +56,13 @@ Word
 }
 
 WordChar
-= ![ \t\n\r:;\[\]]+ ch:. { return ch }
+= ![ '"\t\n\r:;\[\]]+ ch:. { return ch }
 
 /* Strings */
 
 String
-= Quote str:Char* Quote {
-    return { type: "string", payload: str.join("") }
-}
+= Quote str:Char* Quote { return { type: "string", payload: str.join("") } }
+/ "'" str:WordChar+ { return { type: "string", payload: str.join("") } } 
 
 Quote
 = '"'

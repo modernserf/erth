@@ -9,6 +9,7 @@ const schema = createSchema([
     ["word", t.String],
     ["define", t.ArrayOf(token)],
     ["substack", t.ArrayOf(token)],
+    ["comment", t.String],
     ["program", t.ArrayOf(token)],
 ])
 

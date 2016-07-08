@@ -7,6 +7,8 @@ function evalErth (stack, env, token) {
         return
     }
     switch (token.type) {
+    case actions.comment:
+        return
     case actions.string:
     case actions.number:
     case actions.substack:
